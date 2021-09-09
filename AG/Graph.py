@@ -1,15 +1,4 @@
 import csv
-from os import pardir
-import time 
-import timeit
-import statistics as st
-import matplotlib.pyplot as plt
-### variaveis de configuração
-graph_file =  "queen5_5.col"
-graph_path = "./graphs"
-arc_graph = graph_path + "/" + graph_file
-
-
 ###### VERTEX DEFINITION SECTION ##################################
 class Vertex:
     def __init__(self,value,edge):
@@ -48,6 +37,8 @@ class Graph:
             return False
         self.__Vertex[vertex_index].set_Value(value)
         return True
+    def get_Vertexes_Number(self):
+        return len(self.__Vertex)
     def exist_Vertex(self,vertex_index):
         if len(self.__Vertex) - 1 < vertex_index:
             return False
@@ -61,8 +52,7 @@ class Graph:
             print("VERTEX_INDEX " + str(vertex_index1) +"OR "+ str(vertex_index2) + " DOES NOT EXIST")
             return False
         if self.exist_Edge(vertex_index1,vertex_index2):
-            print("EDGE ALREADY EXIST")
-            return False
+            return True
         self.__Vertex[vertex_index1].insert_Edge(vertex_index2)
         self.__Vertex[vertex_index2].insert_Edge(vertex_index1)
         self.__Edges_number += 1
@@ -78,33 +68,35 @@ class Graph:
 
 
 #############################################  CREATE GRAPH FROM FILE #########################################
-print("READING FILE AND BUILDING GRAPH ..... ")
-graph = Graph()
-with open(arc_graph, "r") as file: 
-    line = file.readline()
-    line = line.split()
-    vertex = int(line[2])
-    edge = int(line[3])
-    ### insere Vertexs no grafo
-    i= 0
-    for i in range(vertex):
-        v =  Vertex(0,[])   #### Todos os vertices vao iniciar com a mesma cor 0
-        graph.insert_Vertex(v)
-    # insere arestas 
-    while 1:
+def read_graph_from_file(graph_file_path):
+    print("READING FILE AND BUILDING GRAPH ..... ")
+    graph = Graph()
+    with open(graph_file_path, "r") as file: 
         line = file.readline()
-        if line == "":
-            break
         line = line.split()
-        vertex_index1 = int(line[1])
-        vertex_index2 = int(line[2])
-        #print(vertex_index1-1, vertex_index2-1) ### debug
-        if not graph.insert_Edge(vertex_index1-1,vertex_index2-1):
-            print("ERROR INSERTING EDGE " + str(vertex_index1-1) + " " + str(vertex_index2-1))
-print("GRAPH BUILDING COMPLETED!!!")
-
-for i in range(vertex):
-    print("[ "+str(i)+" ]",end="")
-    for edge in graph.get_Vertex_Edges(i):
-        print(str(edge) + " ", end="")
-    print("")
+        vertex = int(line[2])
+        edge = int(line[3])
+        ### insere Vertexs no grafo
+        i= 0
+        for i in range(vertex):
+            v =  Vertex(0,[])   #### Todos os vertices vao iniciar com a mesma cor 0
+            graph.insert_Vertex(v)
+        # insere arestas 
+        while 1:
+            line = file.readline()
+            if line == "":
+                break
+            line = line.split()
+            vertex_index1 = int(line[1])
+            vertex_index2 = int(line[2])
+            print(vertex_index1-1, vertex_index2-1) ### debug
+            if not graph.insert_Edge(vertex_index1-1,vertex_index2-1):
+                print("ERROR INSERTING EDGE " + str(vertex_index1-1) + " " + str(vertex_index2-1))
+                return 
+    print("GRAPH BUILDING COMPLETED!!!")
+    return graph
+#for i in range(vertex):
+#    print("[ "+str(i)+" ]",end="")
+#    for edge in graph.get_Vertex_Edges(i):
+#        print(str(edge) + " ", end="")
+#    print("")
